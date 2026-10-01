@@ -158,5 +158,12 @@ $('tgc').textContent=count('given',t)+' Entry';$('tec').textContent=count('expen
 }
 $('gd').value=iso();$('ed').value=iso();$('pickDate').value=iso();$('headDate').innerHTML='📅 '+fmt(iso())+'<br>'+new Date().toLocaleDateString('hi-IN',{weekday:'long'});months();render()
 </script>
+  <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/A1-Home-Hisab/sw.js");
+  });
+}
+  </script>
 </body>
 </html>
