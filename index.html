@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A1 Home Hisab - Fresh</title>
+<style>
+:root{--g:#087f45;--gl:#e9f8ef;--red:#c62828;--rl:#fff0f0;--blue:#164b9b;--bg:#f4f8f5;--text:#17231c;--muted:#68756d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans Devanagari",sans-serif}
+header{background:linear-gradient(135deg,#087f45,#10a35d);color:#fff;padding:18px 16px 20px;border-radius:0 0 25px 25px}
+.head{max-width:680px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-size:25px;margin:0}header p{margin:5px 0 0;font-size:14px;color:#dff6e8}.date{border:1px solid #b8f0cf;border-radius:15px;padding:9px 11px;text-align:center;font-size:13px}
+main{max-width:680px;margin:auto;padding:16px}
+h2{font-size:20px;margin:10px 0 13px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#fff;border-radius:17px;padding:17px;box-shadow:0 3px 14px #00000010}.card.g{background:var(--gl)}.card.r{background:var(--rl)}
+.label{font-size:15px;color:var(--muted)}.amount{font-size:27px;font-weight:800;margin-top:8px}.g .amount,.green{color:var(--g)}.r .amount,.red{color:var(--red)}
+.balance{grid-column:1/-1;border:2px solid var(--g);background:#f0fff6}
+.count{font-size:13px;color:#647169;margin-top:6px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+button{border:0;border-radius:14px;padding:15px 12px;font-size:16px;font-weight:800;background:#e8efea;color:#26372c}
+button.primary{background:var(--g);color:#fff}button.danger{background:#ffeaea;color:var(--red)}button.blue{background:#e7efff;color:var(--blue)}
+.panel{display:none;background:#fff;border-radius:18px;padding:17px;margin:15px 0;box-shadow:0 3px 14px #0000000d}.panel.on{display:block}
+.panel h3{margin:0 0 13px;font-size:20px}label{display:block;font-size:14px;color:var(--muted);margin:9px 0 4px}
+input,textarea,select{width:100%;padding:13px;border:1px solid #cbd7ce;border-radius:11px;font-size:16px;background:#fff}textarea{min-height:75px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.item{background:#fff;border:1px solid #dbe5de;border-radius:14px;padding:13px;margin:9px 0}
+.itemhead{display:flex;justify-content:space-between;font-weight:800}.note{margin-top:7px;color:#58655d;font-size:14px}
+.latestgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.latest{border-radius:16px;padding:14px;background:var(--gl)}.latest.exp{background:var(--rl)}
+.view{width:100%;padding:10px;margin-top:10px;font-size:14px}
+.empty{text-align:center;padding:18px;color:#7b887f}.neg{color:var(--red)!important}
+.nav{position:sticky;bottom:0;background:#fff;border-top:1px solid #dfe7e1;display:grid;grid-template-columns:repeat(5,1fr);padding:7px 3px;z-index:10}
+.nav button{background:transparent;padding:8px 2px;font-size:12px;border-radius:10px}.nav button.active{background:var(--gl);color:var(--g)}
+.small{font-size:13px;color:#748078}.summary{margin-top:12px}
+@media(max-width:460px){h1{font-size:22px}.date{font-size:11px}.amount{font-size:25px}.latestgrid{grid-template-columns:1fr}.nav button{font-size:11px}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><h1>🏠 A1 Home Hisab</h1><p>घर के पैसे और खर्च का आसान हिसाब</p></div><div class="date" id="headDate"></div></div></header>
+
+<main>
+<section id="dashboard">
+<h2>आज का हिसाब</h2>
+<div class="cards">
+<div class="card g"><div class="label">आज दिए गए पैसे</div><div class="amount" id="tg">₹0</div><div class="count" id="tgc">0 Entry</div></div>
+<div class="card r"><div class="label">आज का खर्च</div><div class="amount" id="te">₹0</div><div class="count" id="tec">0 Entry</div></div>
+<div class="card balance"><div class="label">आज का Balance</div><div class="amount" id="tb">₹0</div></div>
+</div>
+
+<h2>कुल हिसाब</h2>
+<div class="cards">
+<div class="card g"><div class="label">कुल दिए गए पैसे</div><div class="amount" id="ag">₹0</div></div>
+<div class="card r"><div class="label">कुल खर्च</div><div class="amount" id="ae">₹0</div></div>
+<div class="card balance"><div class="label">कुल उपलब्ध Balance</div><div class="amount" id="ab">₹0</div></div>
+</div>
+
+<div class="actions">
+<button class="primary" onclick="openPanel('given')">➕ पैसे दिए</button>
+<button class="danger" onclick="openPanel('expense')">🧾 खर्च दर्ज करें</button>
+<button class="blue" onclick="openPanel('history')">📋 History</button>
+<button class="blue" onclick="openPanel('monthly')">📅 Monthly Report</button>
+</div>
+
+<h2>Latest Entry</h2>
+<div class="latestgrid">
+<div class="latest"><b class="green">💰 पैसे दिए — Latest 1</b><div id="lg" class="item">कोई Entry नहीं</div><button class="view" onclick="openPanel('history');setFilter('given')">View All</button></div>
+<div class="latest exp"><b class="red">🧾 खर्च — Latest 1</b><div id="le" class="item">कोई Entry नहीं</div><button class="view" onclick="openPanel('history');setFilter('expense')">View All</button></div>
+</div>
+</section>
+
+<section class="panel" id="given">
+<h3>💰 पैसे दिए</h3><label>रकम (₹)</label><input id="ga" type="number" min="0" placeholder="जैसे 1000">
+<label>Note</label><textarea id="gn" placeholder="किस काम/क्यों दिए?"></textarea>
+<label>तारीख</label><input id="gd" type="date"><div class="row"><button class="primary" onclick="add('given')">Save Entry</button><button onclick="closePanels()">Cancel</button></div>
+</section>
+
+<section class="panel" id="expense">
+<h3>🧾 खर्च दर्ज करें</h3><label>रकम (₹)</label><input id="ea" type="number" min="0" placeholder="जैसे 250">
+<label>Note</label><textarea id="en" placeholder="किस काम में खर्च हुआ?"></textarea>
+<label>तारीख</label><input id="ed" type="date"><div class="row"><button class="danger" onclick="add('expense')">Save Entry</button><button onclick="closePanels()">Cancel</button></div>
+</section>
+
+<section class="panel" id="history">
+<h3>📋 History</h3>
+<select id="filter" onchange="renderHistory()"><option value="given">💰 सिर्फ पैसे दिए</option><option value="expense">🧾 सिर्फ खर्च</option><option value="all">📚 सभी Entries</option></select>
+<div id="historyList"></div>
+</section>
+
+<section class="panel" id="monthly">
+<h3>📅 Monthly Report</h3>
+<label>महीना</label><select id="month" onchange="renderMonthly()"></select>
+<div class="cards summary"><div class="card g"><div class="label">इस महीने दिए</div><div class="amount" id="mg">₹0</div></div><div class="card r"><div class="label">इस महीने खर्च</div><div class="amount" id="me">₹0</div></div><div class="card balance"><div class="label">इस महीने Balance</div><div class="amount" id="mb">₹0</div></div></div>
+<h3 style="margin-top:20px">📅 किसी तारीख का पूरा हिसाब</h3>
+<label>तारीख चुनें</label><input id="pickDate" type="date" onchange="renderDay()"><div id="dayResult"></div>
+</section>
+
+<section class="panel" id="settings"><h3>⚙️ Settings</h3><p class="small">Data इसी browser में सुरक्षित रहेगा।</p><button onclick="if(confirm('सारा data delete करें?')){data=[];save();}">सारा Data Delete करें</button></section>
+</main>
+
+<nav class="nav">
+<button id="nDashboard" onclick="go('dashboard')">🏠<br>Dashboard</button>
+<button onclick="openPanel('given')">💰<br>पैसे दिए</button>
+<button onclick="openPanel('expense')">🧾<br>खर्च</button>
+<button onclick="openPanel('history')">📋<br>History</button>
+<button onclick="openPanel('monthly')">📅<br>Monthly</button>
+</nav>
+
+<script>
+const KEY='A1_HOME_FRESH_V1'; let data=JSON.parse(localStorage.getItem(KEY)||'[]');
+const $=id=>document.getElementById(id);
+function iso(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}
+function fmt(s){if(!s)return '';let a=s.split('-');return a[2]+'-'+a[1]+'-'+a[0]}
+function sum(type,date){return data.filter(x=>(!type||x.type==type)&&(!date||x.date==date)).reduce((a,x)=>a+Number(x.amount),0)}
+function count(type,date){return data.filter(x=>x.type==type&&(!date||x.date==date)).length}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function openPanel(id){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));if(id!='dashboard')$(id).classList.add('on');document.getElementById(id)?.scrollIntoView({behavior:'smooth'});render()}
+function closePanels(){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));window.scrollTo({top:0,behavior:'smooth'})}
+function go(id){closePanels();window.scrollTo({top:0,behavior:'smooth'})}
+function setFilter(v){$('filter').value=v;renderHistory()}
+function add(type){
+let a=$(type=='given'?'ga':'ea'),n=$(type=='given'?'gn':'en'),d=$(type=='given'?'gd':'ed');
+if(!Number(a.value)||Number(a.value)<0){alert('रकम दर्ज करें');return}
+data.push({id:Date.now(),type,amount:Number(a.value),note:n.value.trim(),date:d.value||iso()});
+a.value='';n.value='';save();closePanels();alert('Entry Save हो गई ✅')
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function block(x){
+return `<div class="item"><div class="itemhead"><span class="${x.type=='given'?'green':'red'}">${x.type=='given'?'💰 पैसे दिए':'🧾 खर्च'}</span><span>${money(x.amount)}</span></div><div class="small">📅 ${fmt(x.date)}</div><div class="note">📝 ${esc(x.note)||'कोई Note नहीं'}</div></div>`
+}
+function renderHistory(){
+let f=$('filter').value,arr=[...data].filter(x=>f=='all'||x.type==f).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+$('historyList').innerHTML=arr.length?arr.map(block).join(''):'<div class="empty">इस category की कोई Entry नहीं है।</div>'
+}
+function renderLatest(){
+let g=[...data].filter(x=>x.type=='given').sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id)[0];
+let e=[...data].filter(x=>x.type=='expense').sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id)[0];
+$('lg').innerHTML=g?block(g):'कोई Entry नहीं';$('le').innerHTML=e?block(e):'कोई Entry नहीं'
+}
+function renderMonthly(){
+let m=$('month').value,arr=data.filter(x=>x.date.startsWith(m)),g=sum('given').toString();
+let mg=arr.filter(x=>x.type=='given').reduce((a,x)=>a+x.amount,0),me=arr.filter(x=>x.type=='expense').reduce((a,x)=>a+x.amount,0);
+$('mg').textContent=money(mg);$('me').textContent=money(me);$('mb').textContent=money(mg-me);renderDay()
+}
+function renderDay(){
+let d=$('pickDate').value;if(!d){$('dayResult').innerHTML='';return}
+let arr=data.filter(x=>x.date==d),g=arr.filter(x=>x.type=='given').reduce((a,x)=>a+x.amount,0),e=arr.filter(x=>x.type=='expense').reduce((a,x)=>a+x.amount,0);
+$('dayResult').innerHTML=`<div class="cards summary"><div class="card g"><div class="label">उस दिन दिए</div><div class="amount">${money(g)}</div></div><div class="card r"><div class="label">उस दिन खर्च</div><div class="amount">${money(e)}</div></div><div class="card balance"><div class="label">उस दिन Balance</div><div class="amount">${money(g-e)}</div></div></div>`+(arr.length?arr.sort((a,b)=>b.id-a.id).map(block).join(''):'<div class="empty">इस तारीख को कोई Entry नहीं है।</div>')
+}
+function months(){
+let s=$('month'),d=new Date();s.innerHTML='';
+for(let i=0;i<24;i++){let x=new Date(d.getFullYear(),d.getMonth()-i,1),v=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0'),lab=x.toLocaleDateString('hi-IN',{month:'long',year:'numeric'});s.innerHTML+=`<option value="${v}">${lab}</option>`}
+}
+function render(){
+let t=iso(),tg=sum('given',t),te=sum('expense',t),ag=sum('given'),ae=sum('expense');
+$('tg').textContent=money(tg);$('te').textContent=money(te);$('tb').textContent=money(tg-te);$('ag').textContent=money(ag);$('ae').textContent=money(ae);$('ab').textContent=money(ag-ae);
+$('tgc').textContent=count('given',t)+' Entry';$('tec').textContent=count('expense',t)+' Entry';renderLatest();renderHistory();renderMonthly()
+}
+$('gd').value=iso();$('ed').value=iso();$('pickDate').value=iso();$('headDate').innerHTML='📅 '+fmt(iso())+'<br>'+new Date().toLocaleDateString('hi-IN',{weekday:'long'});months();render()
+</script>
+</body>
+</html>
