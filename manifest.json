@@ -1,0 +1,22 @@
+{
+  "name": "A1 Home Hisab",
+  "short_name": "A1 Hisab",
+  "start_url": "/A1-Home-Hisab/",
+  "scope": "/A1-Home-Hisab/",
+  "display": "standalone",
+  "background_color": "#0b7a3b",
+  "theme_color": "#0b7a3b",
+  "description": "A1 Home Hisab - Home Money and Expense Tracker",
+  "icons": [
+    {
+      "src": "/A1-Home-Hisab/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/A1-Home-Hisab/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
